@@ -11,7 +11,7 @@ char ** parse_args(char * line, char * d) {
   int num = 1;
   int i;
   for(i = 0; line[i] != '\0'; i++){
-    if(&line[i] != c){
+    if(&line[i] != d){
       num++;
     }
   }
