@@ -112,3 +112,28 @@ int mypipe (char * line) {
   }
   return 1;
 }
+int doubleRedirect(char * line){
+  char ** command = parse_args(line, "<");
+
+    // splits command into left and right
+  char ** left = parse_args(command[0], " ");
+  char ** right = parse_args(command[1], ">"); // file descriptor
+
+  // char *filename2 = malloc(strlen(command[1]) + 1);
+  char ** file0 = parse_args(right[0], " ");
+  char ** file1 = parse_args(right[1], " ");
+  // printf("%s\n", file0[0] );
+  // printf("%s\n", file1[0] );
+  int backup = dup(STDIN_FILENO);
+  int backup1 = dup(STDOUT_FILENO);
+  int fd = open(file0[0], O_RDONLY, 0644);
+  int fd1 = open(file1[0], O_CREAT | O_WRONLY, 0644);
+  dup2(fd, STDIN_FILENO);
+  dup2(fd1, STDOUT_FILENO);
+  execvp(left[0], left);
+  close(fd);
+  close(fd1);
+  dup2(backup, STDOUT_FILENO);
+  dup2(backup1, STDIN_FILENO);
+  return 1;
+}

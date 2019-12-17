@@ -68,6 +68,8 @@ int main(){
       if (result) {
           int status;
           wait(&status);
+        } else {
+          doubleRedirect(args[i]);
         }
     }
 
