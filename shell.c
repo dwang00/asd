@@ -16,7 +16,7 @@ char ** parse_args(char * line, char * d) {
     }
   }
  char ** args = malloc(count(line, d) * sizeof(char *));
- int i = 0;
+ i = 0;
  while(line != NULL && i < (count(line, d) - 1)) {
    char * holder = strsep(&line, d);
    if (strcmp(d, " ") == 0) {
