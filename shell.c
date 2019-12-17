@@ -15,9 +15,9 @@ char ** parse_args(char * line, char * d) {
       num++;
     }
   }
- char ** args = malloc(count(line, d) * sizeof(char *));
+ char ** args = malloc(num * sizeof(char *));
  i = 0;
- while(line != NULL && i < (count(line, d) - 1)) {
+ while(line != NULL && i < (num - 1)) {
    char * holder = strsep(&line, d);
    if (strcmp(d, " ") == 0) {
      if(holder[0] != '\0') {
