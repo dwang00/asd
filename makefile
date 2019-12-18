@@ -1,18 +1,18 @@
-all: main.o shell.o
-	gcc -o program main.o shell.o
+all: main.o functions.o
+	gcc -o shell main.o functions.o
 
-main.o: main.c shell.h
+main.o: main.c functions.h
 	gcc -c -g main.c
 
-shell.o: shell.c shell.h
-	gcc -c -g shell.c
+functions.o: functions.c functions.h
+	gcc -c -g functions.c
 
 run:
-	./program < TEST_COMMANDS
+	./shell < tests.txt
 
 run2:
-	./program
+	./shell
 
 clean:
 	rm *.o
-	rm program
+	rm shell
