@@ -7,7 +7,7 @@
 #include <fcntl.h>
 #include "shell.h"
 
-char ** parsein(char * input, char * d) { // up to size - 1 commands/args
+char ** parsein(char * input, char * d) {
   int num = 1;
   int i;
   for(i = 0; input[i] != '\0'; i++){
@@ -54,9 +54,9 @@ int find_redirect(char * input){
 }
 
 int doubleRedirect(char * input){
-  char ** command = parsein(input, "<");
-  char ** left = parsein(command[0], " ");
-  char ** right = parsein(command[1], ">");
+  char ** cmd = parsein(input, "<");
+  char ** left = parsein(cmd[0], " ");
+  char ** right = parsein(cmd[1], ">");
   char ** file0 = parsein(right[0], " ");
   char ** file1 = parsein(right[1], " ");
   //int backup = dup(STDIN_FILENO);
@@ -72,29 +72,28 @@ int doubleRedirect(char * input){
   //dup2(backup1, STDIN_FILENO);
   return 1;
 }
-int output(char * input){
-  char ** command = parsein(input, ">");
-  int fd;
-  char ** left = parsein(command[0], " ");
-  char ** right = parsein(command[1], " ");
-  fd = open(right[0], O_CREAT | O_WRONLY, 0644);
+int oredirect(char * input){
+  char ** cmd = parsein(input, ">");
+  char ** sender = parsein(cmd[0], " ");
+  char ** receiver = parsein(cmd[1], " ");
+  int fd = open(receiver[0], O_CREAT | O_WRONLY, 0644);
   //int backup = dup(STDOUT_FILENO);
   dup2(fd, STDOUT_FILENO);
-  execvp(left[0], left);
+  execvp(sender[0], sender);
   //dup2(backup, STDOUT_FILENO);
   close(fd);
   return 1;
 }
 
-int inputt(char * input){
-  char ** command = parsein(input, "<");
-  char *filename = malloc(strlen(command[1]) + 1);
-  char ** left = parsein(command[0], " ");
-  char ** right = parsein(command[1], " ");
-  int fd = open(right[0], O_RDONLY, 0644);
+int iredirect(char * input){
+  char ** cmd = parsein(input, "<");
+  //char *f = malloc(strlen(cmd[1]) + 1);
+  char ** sender = parsein(cmd[0], " ");
+  char ** receiver = parsein(cmd[1], " ");
+  int fd = open(receiver[0], O_RDONLY, 0644);
   //int backup = dup(STDIN_FILENO);
   dup2(fd, STDIN_FILENO);
-  execvp(left[0], left);
+  execvp(sender[0], sender);
   //dup2(backup, STDIN_FILENO);
   close(fd);
   free(filename);
@@ -102,9 +101,9 @@ int inputt(char * input){
 
 }
 int mypipe (char * input) {
-  char ** command = parsein(input, "|");
-  char ** left = parsein(command[0], " ");
-  char ** right = parsein(command[1], " ");
+  char ** cmd = parsein(input, "|");
+  char ** left = parsein(cmd[0], " ");
+  char ** right = parsein(cmd[1], " ");
   int pd[2];
   int pid;
   //int backup = dup(0);
