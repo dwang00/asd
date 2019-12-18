@@ -27,7 +27,7 @@ int main(){
           wait(&status);
         }
         else {
-          oisig(args[i]);
+          oiredirect(args[i]);
         }
       }
       if (sig == 2) {
@@ -37,7 +37,7 @@ int main(){
           wait(&status);
         }
         else {
-          isig(args[i]);
+          iredirect(args[i]);
         }
       }
       if(sig == 3){
@@ -47,7 +47,7 @@ int main(){
           wait(&status);
         }
         else {
-          osig(args[i]);
+          oredirect(args[i]);
         }
       }
       if (sig == 4) {
