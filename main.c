@@ -22,7 +22,7 @@ int main(){
     if (input[strlen(input) - 1] == '\n') input[strlen(input) - 1] = '\0';
     // getcwd(dir, sizeof(dir));
     // printf("%s$  %s", dir, input);
-    char ** args = parse_args(input, ";");
+    char ** args = parsein(input, ";");
     int i = 0;
     //iterates through args until it reaches the NULL
     while(args[i]){
@@ -76,7 +76,7 @@ int main(){
 
     //other command
     if (redirect == 0) {
-    char ** command = parse_args(args[i], " ");
+    char ** command = parsein(args[i], " ");
     //exits the program
     if (strcmp(command[0], "exit") == 0) {
       return 0;
