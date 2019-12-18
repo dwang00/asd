@@ -62,8 +62,8 @@ int oiredirect(char * input){
   char ** c = parsein(a[1], ">");
   char ** f0 = parsein(c[0], " ");
   char ** f1 = parsein(c[1], " ");
-  int fd0 = open(file0[0], O_RDONLY, 0644);
-  int fd1 = open(file1[0], O_CREAT | O_WRONLY, 0644);
+  int fd0 = open(f0[0], O_RDONLY, 0644);
+  int fd1 = open(f1[0], O_CREAT | O_WRONLY, 0644);
   dup2(fd0, STDIN_FILENO);
   dup2(fd1, STDOUT_FILENO);
   execvp(b[0], b);
