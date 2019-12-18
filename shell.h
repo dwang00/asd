@@ -10,7 +10,7 @@
 
 int count(char* line, char * c);
 
-char **parse_args(char* line, char * delim);
+char **parsein(char* line, char * delim);
 
 int exec_cmd(char *cmd);
 
