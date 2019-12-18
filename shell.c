@@ -100,16 +100,15 @@ int iredirect(char * input){
   return 1;
 
 }
-int mypipe (char * input) {
+int newpipe (char * input) {
   char ** cmd = parsein(input, "|");
-  char ** left = parsein(cmd[0], " ");
-  char ** right = parsein(cmd[1], " ");
+  char ** a = parsein(cmd[0], " ");
+  char ** b = parsein(cmd[1], " ");
   int pd[2];
-  int pid;
   //int backup = dup(0);
   //int backup2 = dup(1);
   pipe(pd);
-  pid = fork();
+  int pid = fork();
   if (pid){
     close(pd[1]);
     //backup = dup(0);

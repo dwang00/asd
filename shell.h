@@ -6,6 +6,6 @@ int oredirect(char * line);
 
 int iredirect(char * line);
 
-int mypipe (char * line) ;
+int newpipe (char * line) ;
 
 int doubleRedirect(char * line);

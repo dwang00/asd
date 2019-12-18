@@ -59,7 +59,7 @@ int main(){
           int status;
           wait(&status);
         } else {
-          mypipe(args[i]);
+          newpipe(args[i]);
         }
     }
 
