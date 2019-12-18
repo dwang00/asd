@@ -1,4 +1,4 @@
-input#include <stdlib.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
@@ -16,7 +16,7 @@ char ** parsein(char * input, char * d) { // up to size - 1 commands/args
     }
   }
   char ** args = malloc(num * sizeof(char *));
-  int i = 0;
+  i = 0;
   while(input != NULL && i < (num - 1)) {
    char * holder = strsep(&input, d);
    if (strcmp(d, " ") == 0){
