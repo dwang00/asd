@@ -1,53 +1,47 @@
-# shellProject
-Kenneth Chin and Minuk Kim, System Level Programming, PD 4, Project 1
+# Shell
+David Wang, Systems Level Programming, PD 5, Project 1
 
-make run - tests commands from TEST_COMMANDS  
-make run2 - allows user to use the shell freely
+make test - tests commands from tests.txt  
+make run - runs shell
 
-**We wrote a shell interface that**
-1. reads in a line with single command or multiple commands separated with delimiter ";"
+**Features**
+1. can run command line commands, multiple commands on the same line should be
+   separated by ";"
 
-2. takes the "cd" command to change the location of directory
+2. can redirect inputs and outputs using "<" and ">"
 
-3. quits the program when the "exit" command or "CTRL + C", alternative "interrupt" signal, is used
-
-4. redirects inputs and outputs to files using ">" and "<"
-
-5. connects two commands to feed ouput of one command into the input of another using "|"
-
-# Extra Features
-1. Support multiple redirections
-
-2. Show current path of directory
-
+3. can connect 2 commands with pipes "|"
 
 # Limitations
-1. Unable to implement the ">>" redirection command that appends output to a files
+1. redirect output and overwrite ">>" not implemented
 
-2. Unable to use pipe with more than two files
+2. piping limited to single pipe
 
-# Function Headers
-
-*  `int count(char* line, char * c)`
-  - count the number of delimiters from a given argument seperated by char c.
-* `char ** parse_args(char * line, char * d)`
-  - parses through a char pointer.
-  - returns an arrary of pointers seperated by a given delimeter.
-* `int find_redirect(char * line)`
-  - takes in input char * args and will return int based on if a certain character is present.
-  - will return 1 if '>'
-  - will return 2 if '<'
-  - will return 3 if '|'
-* `int output(char * line)`
-  - takes an input char * line and returns 1.
-  - runs stdout to a file.
-* `int inputt(char * line)`
-  - takes an input char * line and returns 1.
-  - runs stdin to a file.
-* `int mypipe (char * line)`
-  - takes char * line.
-  - parses for | character.
-  - forks and runs the necessary arguments.
-*  `int doubleRedirect(char * line)`
-   - takes input char * line that has double redirection
-   - runs stdin and stdout to 2 different files with the command
+# Headers
+* `char **parsein(char * input, char * delim);)`
+  - inputs: char * input, char * delim
+  - parses through char pointer "input"
+  - returns array of pointers, values separated by char "delim"
+* `int oredirect(char * input);`
+  - inputs: char * input
+  - if ">" is detected in input, output redirection will be run on the given
+    parameters
+  - returns 1
+* `int iredirect(char * input);`
+   - inputs: char * input
+   - if "<" is detected in input, input redirection will be run on the given
+     parameters
+   - returns 1
+*  `int oiredirect(char * input)`
+   - inputs: char * input
+   - if ">" and "<" is detected in input, output and input redirection will be
+     run on the given parameters
+   - returns 1
+ * `int newpipe (char * input)`
+   - inputs: char * input
+   - if "|" is detected in input, the two commands will be run such that the
+     output of the first command will be use as a parameter for the 2nd
+   - returns 1
+ * `int intsigs(char * input);`
+   - inputs: char * input,
+   - returns signaling ints for use in main.c

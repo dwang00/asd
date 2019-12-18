@@ -19,38 +19,38 @@ int main(){
     char ** args = parsein(input, ";");
     int i = 0;
     while (args[i]) {
-      int redirect = intsigs(args[i]);
-      if (redirect == 1) {
+      int sig = intsigs(args[i]);
+      if (sig == 1) {
         int result = fork();
         if (result) {
           int status;
           wait(&status);
         }
         else {
-          oiredirect(args[i]);
+          oisig(args[i]);
         }
       }
-      if (redirect == 2) {
+      if (sig == 2) {
         int result = fork();
         if (result) {
           int status;
           wait(&status);
         }
         else {
-          iredirect(args[i]);
+          isig(args[i]);
         }
       }
-      if(redirect == 3){
+      if(sig == 3){
         int result = fork();
         if (result) {
           int status;
           wait(&status);
         }
         else {
-          oredirect(args[i]);
+          osig(args[i]);
         }
       }
-      if (redirect == 4) {
+      if (sig == 4) {
         int result = fork();
         if (result) {
           int status;
@@ -60,17 +60,17 @@ int main(){
           newpipe(args[i]);
         }
       }
-      if (redirect == 0) {
-        char ** command = parsein(args[i], " ");
-        if (strcmp(command[0], "exit") == 0) {
+      if (sig == 0) {
+        char ** cmd = parsein(args[i], " ");
+        if (strcmp(cmd[0], "exit") == 0) {
           return 0;
         }
-        if (strcmp(command[0], "cd") == 0) {
-          if (command[2] != NULL){
+        if (strcmp(cmd[0], "cd") == 0) {
+          if (cmd[2] != NULL){
             printf("cd <filepath> error\n" );
           }
           else{
-            chdir(command[1]);
+            chdir(cmd[1]);
             if (errno){
               printf("%s\n", strerror(errno));
               errno = 0;
@@ -84,9 +84,9 @@ int main(){
             wait(&status);
           }
           else {
-            execvp(command[0], command);
+            execvp(cmd[0], cmd);
             if (errno) {
-              printf("Command doesn't exist: %s\n", command[0]);
+              printf("command doesn't exist: %s\n", cmd[0]);
               return 0;
             }
           }
