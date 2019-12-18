@@ -96,7 +96,7 @@ int iredirect(char * input){
   execvp(sender[0], sender);
   //dup2(backup, STDIN_FILENO);
   close(fd);
-  free(filename);
+  //free(filename);
   return 1;
 
 }
