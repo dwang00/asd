@@ -7,10 +7,10 @@ main.o: main.c functions.h
 functions.o: functions.c functions.h
 	gcc -c -g functions.c
 
-run:
-	./shell < tests.txt
+test:
+	./shell < tests
 
-run2:
+run:
 	./shell
 
 clean:
