@@ -1,4 +1,4 @@
-#include <stdlib.h>
+input#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
@@ -7,125 +7,60 @@
 #include <fcntl.h>
 #include "shell.h"
 
-char ** parse_args(char * line, char * d) {
+char ** parsein(char * input, char * d) { // up to size - 1 commands/args
   int num = 1;
   int i;
-  for(i = 0; line[i] != '\0'; i++){
-    if(&line[i] != d){
+  for(i = 0; input[i] != '\0'; i++){
+    if(&input[i] != d){
       num++;
     }
   }
- char ** args = malloc(num * sizeof(char *));
- i = 0;
- while(line != NULL && i < (num - 1)) {
-   char * holder = strsep(&line, d);
-   if (strcmp(d, " ") == 0) {
+  char ** args = malloc(num * sizeof(char *));
+  int i = 0;
+  while(input != NULL && i < (num - 1)) {
+   char * holder = strsep(&input, d);
+   if (strcmp(d, " ") == 0){
      if(holder[0] != '\0') {
        args[i] = holder;
        i++;
      }
    }
-   else {
+   else{
      args[i] = holder;
      i++;
    }
- }
- args[i] = NULL;
- return args;
+  }
+  args[i] = NULL;
+  return args;
 }
-int find_redirect(char * line){
-  if (strstr(line, "<")) {
-    if (strstr(line, ">")) {
+
+int find_redirect(char * input){
+  if (strstr(input, "<")) {
+    if (strstr(input, ">")) {
       return 4;
     }
     return 2;
 
   }
 
-    if (strstr(line, ">")) {
+    if (strstr(input, ">")) {
       return 1;
     }
 
-    if (strstr(line, "|"))  {
+    if (strstr(input, "|"))  {
       return 3;
     }
     return 0;
 }
 
-int output(char * line){
-  char ** command = parse_args(line, ">");
-  int fd;
-  char ** left = parse_args(command[0], " ");
-  char ** right = parse_args(command[1], " ");
-  fd = open(right[0], O_CREAT | O_WRONLY, 0644);
-  int backup = dup(STDOUT_FILENO);
-  dup2(fd, STDOUT_FILENO);
-  execvp(left[0], left);
-  dup2(backup, STDOUT_FILENO);
-  close(fd);
-  return 1;
-}
-
-int inputt(char * line){
-  char ** command = parse_args(line, "<");
-  char *filename = malloc(strlen(command[1]) + 1);
-  char ** left = parse_args(command[0], " ");
-  char ** right = parse_args(command[1], " ");
-  int fd = open(right[0], O_RDONLY, 0644);
-  int backup = dup(STDIN_FILENO);
-  dup2(fd, STDIN_FILENO);
-  execvp(left[0], left);
-  dup2(backup, STDIN_FILENO);
-  close(fd);
-  free(filename);
-  return 1;
-
-}
-int mypipe (char * line) {
-  char ** command = parse_args(line, "|");
-  char ** left = parse_args(command[0], " ");
-  char ** right = parse_args(command[1], " ");
-  int pd[2];
-  int pid;
-  int backup = dup(0);
-  int backup2 = dup(1);
-  pipe(pd);
-  pid = fork();
-  if (pid){
-    close(pd[1]);
-    backup = dup(0);
-    dup2(pd[0],0);
-    execvp(right[0], right);
-    dup2(backup,0);
-    close(backup);
-    close(pd[0]);
-  }
-  else {
-    close(pd[0]);
-    backup2 = dup(1);
-    dup2(pd[1],1);
-    execvp (left[0], left);
-    dup2(backup2,1);
-    close(backup2);
-    close(pd[1]);
-    exit(0);
-  }
-  return 1;
-}
-int doubleRedirect(char * line){
-  char ** command = parse_args(line, "<");
-
-    // splits command into left and right
-  char ** left = parse_args(command[0], " ");
-  char ** right = parse_args(command[1], ">"); // file descriptor
-
-  // char *filename2 = malloc(strlen(command[1]) + 1);
-  char ** file0 = parse_args(right[0], " ");
-  char ** file1 = parse_args(right[1], " ");
-  // printf("%s\n", file0[0] );
-  // printf("%s\n", file1[0] );
-  int backup = dup(STDIN_FILENO);
-  int backup1 = dup(STDOUT_FILENO);
+int doubleRedirect(char * input){
+  char ** command = parsein(input, "<");
+  char ** left = parsein(command[0], " ");
+  char ** right = parsein(command[1], ">");
+  char ** file0 = parsein(right[0], " ");
+  char ** file1 = parsein(right[1], " ");
+  //int backup = dup(STDIN_FILENO);
+  //int backup1 = dup(STDOUT_FILENO);
   int fd = open(file0[0], O_RDONLY, 0644);
   int fd1 = open(file1[0], O_CREAT | O_WRONLY, 0644);
   dup2(fd, STDIN_FILENO);
@@ -133,7 +68,67 @@ int doubleRedirect(char * line){
   execvp(left[0], left);
   close(fd);
   close(fd1);
-  dup2(backup, STDOUT_FILENO);
-  dup2(backup1, STDIN_FILENO);
+  //dup2(backup, STDOUT_FILENO);
+  //dup2(backup1, STDIN_FILENO);
+  return 1;
+}
+int output(char * input){
+  char ** command = parsein(input, ">");
+  int fd;
+  char ** left = parsein(command[0], " ");
+  char ** right = parsein(command[1], " ");
+  fd = open(right[0], O_CREAT | O_WRONLY, 0644);
+  //int backup = dup(STDOUT_FILENO);
+  dup2(fd, STDOUT_FILENO);
+  execvp(left[0], left);
+  //dup2(backup, STDOUT_FILENO);
+  close(fd);
+  return 1;
+}
+
+int inputt(char * input){
+  char ** command = parsein(input, "<");
+  char *filename = malloc(strlen(command[1]) + 1);
+  char ** left = parsein(command[0], " ");
+  char ** right = parsein(command[1], " ");
+  int fd = open(right[0], O_RDONLY, 0644);
+  //int backup = dup(STDIN_FILENO);
+  dup2(fd, STDIN_FILENO);
+  execvp(left[0], left);
+  //dup2(backup, STDIN_FILENO);
+  close(fd);
+  free(filename);
+  return 1;
+
+}
+int mypipe (char * input) {
+  char ** command = parsein(input, "|");
+  char ** left = parsein(command[0], " ");
+  char ** right = parsein(command[1], " ");
+  int pd[2];
+  int pid;
+  //int backup = dup(0);
+  //int backup2 = dup(1);
+  pipe(pd);
+  pid = fork();
+  if (pid){
+    close(pd[1]);
+    //backup = dup(0);
+    dup2(pd[0],0);
+    execvp(right[0], right);
+    //dup2(backup,0);
+    //close(backup);
+    close(pd[0]);
+  }
+  else {
+    close(pd[0]);
+    //backup2 = dup(1);
+    dup2(pd[1],1);
+    execvp (left[0], left);
+    //dup2(backup2,1);
+    //close(backup2);
+    close(pd[1]);
+    exit(0);
+  }
   return 1;
 }
