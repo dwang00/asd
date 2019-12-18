@@ -113,7 +113,7 @@ int newpipe (char * input) {
     close(pd[1]);
     //backup = dup(0);
     dup2(pd[0],0);
-    execvp(right[0], right);
+    execvp(b[0], b);
     //dup2(backup,0);
     //close(backup);
     close(pd[0]);
@@ -122,7 +122,7 @@ int newpipe (char * input) {
     close(pd[0]);
     //backup2 = dup(1);
     dup2(pd[1],1);
-    execvp (left[0], left);
+    execvp (a[0], a);
     //dup2(backup2,1);
     //close(backup2);
     close(pd[1]);
