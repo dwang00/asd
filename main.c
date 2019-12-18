@@ -4,119 +4,97 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include "shell.h"
+#include "functions.h"
 
 
 
 int main(){
-
-  while(1) {
+  while(true) {
     char dir[4096];
-      char input[4096];
-    // gets the current directory
-    // getcwd(dir, sizeof(dir));
-    // printf("%s$ ", dir);
+    char input[4096];
     fgets(input, sizeof(input), stdin);
     getcwd(dir, sizeof(dir));
-   printf("%s$ %s", dir, input);
+    printf("%s$ %s", dir, input);
     if (input[strlen(input) - 1] == '\n') input[strlen(input) - 1] = '\0';
-    // getcwd(dir, sizeof(dir));
-    // printf("%s$  %s", dir, input);
     char ** args = parsein(input, ";");
     int i = 0;
-    //iterates through args until it reaches the NULL
-    while(args[i]){
-    int redirect = find_redirect(args[i]);
-    // printf("%d\n",  redirect);
-
-    //stout
-    if(redirect == 1){
-      int result = fork();
-      if (result) {
+    while (args[i]) {
+      int redirect = intsigs(args[i]);
+      if (redirect == 1) {
+        int result = fork();
+        if (result) {
           int status;
           wait(&status);
-        } else {
+        }
+        else {
+          oiredirect(args[i]);
+        }
+      }
+      if (redirect == 2) {
+        int result = fork();
+        if (result) {
+          int status;
+          wait(&status);
+        }
+        else {
+          iredirect(args[i]);
+        }
+      }
+      if(redirect == 3){
+        int result = fork();
+        if (result) {
+          int status;
+          wait(&status);
+        }
+        else {
           oredirect(args[i]);
         }
-    }
-
-    //stdin
-    if (redirect == 2) {
-      int result = fork();
-      if (result) {
+      }
+      if (redirect == 4) {
+        int result = fork();
+        if (result) {
           int status;
           wait(&status);
-        } else {
-           iredirect(args[i]);
         }
-
-    }
-
-    //pipe
-    if (redirect == 3) {
-      int result = fork();
-      if (result) {
-          int status;
-          wait(&status);
-        } else {
+        else {
           newpipe(args[i]);
         }
-    }
-
-    if (redirect == 4) {
-      int result = fork();
-      if (result) {
-          int status;
-          wait(&status);
-        } else {
-          doubleRedirect(args[i]);
-        }
-    }
-
-
-    //other command
-    if (redirect == 0) {
-    char ** command = parsein(args[i], " ");
-    //exits the program
-    if (strcmp(command[0], "exit") == 0) {
-      return 0;
-    }
-    // runs cd
-    if (strcmp(command[0], "cd") == 0) {
-      if (command[2] != NULL){
-        printf("Syntax error: cd <filepath> \n" );
       }
-      else{
-        // enters new directory
-        chdir(command[1]);
-        if (errno){
-          printf("%s\n", strerror(errno));
-          errno = 0;
-        }
-      }
-    }
-    else {
-    int result = fork();
-    if (result) {
-      //parent
-        int status;
-        wait(&status);
-      } else {
-        //runs child
-        execvp(command[0], command);
-        if (errno) {
-          printf("%s: command not found\n", command[0]);
+      if (redirect == 0) {
+        char ** command = parsein(args[i], " ");
+        if (strcmp(command[0], "exit") == 0) {
           return 0;
-       }
+        }
+        if (strcmp(command[0], "cd") == 0) {
+          if (command[2] != NULL){
+            printf("cd <filepath> error\n" );
+          }
+          else{
+            chdir(command[1]);
+            if (errno){
+              printf("%s\n", strerror(errno));
+              errno = 0;
+            }
+          }
+        }
+        else {
+          int result = fork();
+          if (result) {
+            int status;
+            wait(&status);
+          }
+          else {
+            execvp(command[0], command);
+            if (errno) {
+              printf("Command doesn't exist: %s\n", command[0]);
+              return 0;
+            }
+          }
+        }
       }
+      i++;
     }
-    // i++;
-  }
-  //iterators through the ;
-  i++;
-}
     free(args);
   }
-
   return 0;
 }
