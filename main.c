@@ -36,7 +36,7 @@ int main(){
           int status;
           wait(&status);
         } else {
-          output(args[i]);
+          oredirect(args[i]);
         }
     }
 
@@ -47,7 +47,7 @@ int main(){
           int status;
           wait(&status);
         } else {
-           inputt(args[i]);
+           iredirect(args[i]);
         }
 
     }
