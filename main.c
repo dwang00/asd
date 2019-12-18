@@ -9,7 +9,7 @@
 
 
 int main(){
-  while(true) {
+  while(1) {
     char dir[4096];
     char input[4096];
     fgets(input, sizeof(input), stdin);
